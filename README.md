@@ -1,8 +1,6 @@
 # Smoking Detection Using Machine Learning and Deep Convolutional Neural Networks
 
 An end-to-end computer vision and deep learning system designed to detect cigarette smoking behavior in static images, pre-recorded video files, and real-time webcam feeds. The pipeline utilizes a custom Convolutional Neural Network (CNN) implemented in TensorFlow and Keras, integrated with a lightweight Flask web interface for live inference, confidence reporting, and automated alerts.
-
-* Repository: https://github.com/AsifQamar/Smoking-detection-using-machine-learning.git
 * Core Technologies: Python 3.12, TensorFlow 2.x, Keras, OpenCV, Flask, NumPy, Scikit-Learn, Matplotlib
 
 ---
