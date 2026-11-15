@@ -10,6 +10,10 @@ An end-to-end computer vision and deep learning system designed to detect cigare
 * **The Problem**: Unauthorized smoking in non-designated zones (hospitals, petrol stations, offices, transit hubs) creates public health and fire hazards. Manual patrols are labor-intensive, while physical smoke alarms suffer from air dispersion delays and cannot identify offenders.
 * **The Solution**: An automated vision pipeline that analyzes video/image frames in real time to recognize smoking gestures and cigarette objects.
 
+
+https://github.com/user-attachments/assets/8d7b684d-0a76-4261-84bf-7fd484808941
+
+
 ---
 
 ## 2. System Architecture
