@@ -9,7 +9,6 @@ An end-to-end computer vision and deep learning system designed to detect cigare
 
 * **The Problem**: Unauthorized smoking in non-designated zones (hospitals, petrol stations, offices, transit hubs) creates public health and fire hazards. Manual patrols are labor-intensive, while physical smoke alarms suffer from air dispersion delays and cannot identify offenders.
 * **The Solution**: An automated vision pipeline that analyzes video/image frames in real time to recognize smoking gestures and cigarette objects.
-* **False Positive Fix**: Standard 50% thresholds trigger false alarms on everyday eating or drinking gestures (such as holding ice cream or cups near the mouth). This system uses a calibrated **70% (0.70) decision threshold**, suppressing false alerts while maintaining high sensitivity for genuine smoking activity.
 
 ---
 
