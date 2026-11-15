@@ -1,0 +1,9 @@
+{
+  "accuracy": 0.7667,
+  "precision": 0.7308,
+  "recall": 0.8444,
+  "f1_score": 0.7835,
+  "epochs": 25,
+  "image_size": "64x64",
+  "model": "CNN (Conv2D-32 -> MaxPool -> Conv2D-32 -> MaxPool -> Dense-128 -> Dropout-0.3 -> Sigmoid)"
+}
