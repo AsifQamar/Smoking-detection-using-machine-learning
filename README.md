@@ -1,9 +1,9 @@
 # Smoking Detection Using Machine Learning and Deep Convolutional Neural Networks
 
-An end-to-end computer vision and deep learning system designed to detect cigarette smoking behavior in static images, pre-recorded video streams, and real-time webcam feeds. The pipeline utilizes a custom Convolutional Neural Network (CNN) implemented in TensorFlow/Keras, integrated with a lightweight Flask web interface for live inference and automated alerts.
+An end-to-end computer vision and deep learning system designed to detect cigarette smoking behavior in static images, pre-recorded video files, and real-time webcam feeds. The pipeline utilizes a custom Convolutional Neural Network (CNN) implemented in TensorFlow and Keras, integrated with a lightweight Flask web interface for live inference, confidence reporting, and automated alerts.
 
-* Repository URL: https://github.com/AsifQamar/Smoking-detection-using-machine-learning.git
-* Primary Frameworks: TensorFlow 2.x, Keras, OpenCV, Flask, NumPy, Scikit-Learn
+* Repository: https://github.com/AsifQamar/Smoking-detection-using-machine-learning.git
+* Core Technologies: Python 3.12, TensorFlow 2.x, Keras, OpenCV, Flask, NumPy, Scikit-Learn, Matplotlib
 
 ---
 
@@ -14,8 +14,8 @@ An end-to-end computer vision and deep learning system designed to detect cigare
 3. [Dataset and Preprocessing](#3-dataset-and-preprocessing)
 4. [Exploratory Data Analysis (EDA)](#4-exploratory-data-analysis-eda)
 5. [Model Architecture and Specifications](#5-model-architecture-and-specifications)
-6. [Mathematical Foundations and Internal Working](#6-mathematical-foundations-and-internal-working)
-7. [Model Evaluation and Performance Metrics](#7-model-evaluation-and-performance-metrics)
+6. [Internal Working and Mathematical Foundations](#6-internal-working-and-mathematical-foundations)
+7. [Model Evaluation and Quantitative Results](#7-model-evaluation-and-quantitative-results)
 8. [Project File Structure](#8-project-file-structure)
 9. [Installation and Execution Guide](#9-installation-and-execution-guide)
 10. [Repository Deployment and Git Instructions](#10-repository-deployment-and-git-instructions)
@@ -26,54 +26,54 @@ An end-to-end computer vision and deep learning system designed to detect cigare
 
 ### 1.1 Problem Statement
 
-Cigarette smoking in restricted zones creates severe public health liabilities, increases secondhand smoke exposure for non-smokers, and presents substantial fire and safety hazards in environments such as chemical facilities, petrol stations, hospitals, public transit hubs, and commercial office complexes.
+Cigarette smoking in non-designated or restricted areas creates major public health liabilities, increases secondhand smoke exposure for non-smokers, and presents severe fire risks in environments such as industrial chemical plants, petrol stations, healthcare facilities, commercial office buildings, and public transportation nodes.
 
-Traditional enforcement mechanisms exhibit major operational shortcomings:
+Traditional enforcement and detection approaches present substantial operational constraints:
 
-* **Manual Inspection**: Monitoring large physical sites requires continuous human supervision, which is labor-intensive, costly, subject to fatigue, and prone to delayed incident discovery.
-* **Physical Smoke and Particle Sensors**: Conventional ionization or photoelectric smoke detectors require smoke particles to physically reach the detector chamber. Due to air currents, ceiling heights, and ventilation dispersion, these sensors experience significant detection delays and cannot identify the specific individual violating regulations.
-* **Occlusion and Line-of-Sight Limitations**: Standard security personnel cannot continuously monitor private or segmented corners across extensive facilities.
+* **Manual Human Patrols**: Continuous surveillance over extensive physical premises is resource-intensive, expensive, prone to fatigue, and incapable of providing comprehensive spatial coverage.
+* **Physical Smoke and Ionization Detectors**: Traditional physical sensors depend on smoke particles physically drifting into the detector chamber. Atmospheric ventilation, ceiling heights, and air currents cause significant detection latency. Furthermore, physical sensors cannot pinpoint the specific individual violating safety regulations.
+* **Camera Blind Spots and Occlusions**: Fixed security cameras without automated intelligence require human operators to actively spot small cigarette objects across dozens of concurrent video feeds.
 
 ### 1.2 Proposed Solution
 
-This project presents an automated, vision-based smoking detection system that processes visual media streams to identify active smoking gestures and presence in near real-time.
+This project implements an automated, computer vision-based smoking detection pipeline that monitors visual feeds to identify active smoking actions in near real-time.
 
-Key components of the solution include:
+Key capabilities include:
 
-* **Automated Feature Extraction**: A Convolutional Neural Network (CNN) that automatically learns hierarchical spatial representations, including fingers curled around cylindrical objects, localized cigarette tips, and hand-to-mouth proximity patterns.
-* **Multi-Modal Input Support**: Unified inference pipeline supporting single image uploads, video timeline analysis, and live interactive webcam capture.
-* **Calibrated Confidence Thresholding**: Implementation of a 70.0% ($0.70$) probability threshold to eliminate false positive classifications resulting from common eating, drinking, and hand-to-face motions.
-* **Operational Web Interface**: A minimal, responsive Flask application providing real-time visual feedback, confidence score gauges, and clear classification alerts without third-party cloud dependencies.
+* **Automated Feature Representation**: A deep Convolutional Neural Network automatically extracts structural features including fingers curled around cylindrical cigarette objects, localized heat tips, and hand-to-mouth proximity.
+* **Multi-Modal Input Processing**: A unified inference pipeline supporting single image uploads (`.jpg`, `.png`, `.webp`), video timeline frame-sampling (`.mp4`, `.avi`, `.mov`), and direct client webcam capture via WebRTC.
+* **Calibrated Decision Boundary**: A 70.0% ($0.70$) alert threshold designed to eliminate false positives caused by common mouth-proximity gestures such as eating ice cream, drinking, or holding pens.
+* **Self-Contained Web Interface**: A responsive Flask application delivering real-time visual alerts, confidence gauges, and status summaries without external cloud API dependencies.
 
 ---
 
 ## 2. System Architecture
 
-The end-to-end data processing and inference architecture is structured as follows:
+The pipeline processes visual inputs through sequential acquisition, normalization, tensor transformation, convolutional inference, and web response stages.
 
 ```mermaid
 flowchart TD
-    A["Input Media (Image / Video / Camera)"] --> B["OpenCV Preprocessing & Frame Extraction"]
-    B --> C["Color Space Conversion (BGR to RGB)"]
-    C --> D["Spatial Resizing to (64 x 64 x 3)"]
-    D --> E["Min-Max Normalization: x / 255.0"]
-    E --> F["Tensor Expansion: (1, 64, 64, 3)"]
-    F --> G["Trained CNN Classifier"]
-    G --> H["Sigmoid Output: Probability p in [0, 1]"]
-    H --> I{"Threshold Check: p >= 0.70?"}
-    I -- "Yes" --> J["Verdict: Smoking Detected (Alert)"]
-    I -- "No" --> K["Verdict: Not Smoking (Clear)"]
-    J --> L["JSON Response to Web Client"]
-    K --> L["JSON Response to Web Client"]
+    A[Input Media: Image, Video, or Camera] --> B[OpenCV Frame Decoding]
+    B --> C[Color Space Conversion: BGR to RGB]
+    C --> D[Spatial Interpolation: 64x64 Pixels]
+    D --> E[Pixel Value Normalization: Divide by 255.0]
+    E --> F[Tensor Batch Expansion: 1x64x64x3]
+    F --> G[Trained CNN Model]
+    G --> H[Sigmoid Posterior Probability: p]
+    H --> I{Threshold Check}
+    I -->|p >= 0.70| J[Alert: Smoking Detected]
+    I -->|p < 0.70| K[Clear: Not Smoking]
+    J --> L[JSON Delivery to Web Dashboard]
+    K --> L[JSON Delivery to Web Dashboard]
 ```
 
-### Pipeline Breakdown
+### Execution Stages
 
-1. **Input Interface**: Images, video files, or client webcam snapshots are delivered to the Flask HTTP server via RESTful endpoints (`/predict_image`, `/predict_video`, `/predict_camera`).
-2. **Preprocessing Engine**: Media is decoded into OpenCV arrays, mapped to RGB, resized to the uniform training resolution of $64 \times 64$, and scaled to floating-point values in the range $[0.0, 1.0]$.
-3. **Inference Engine**: Preprocessed tensors are evaluated by the loaded Keras model file (`smoke_detection_model.keras`), outputting a continuous posterior probability $p \in (0, 1)$.
-4. **Decision Logic**: The score is matched against the calibrated operating threshold $\tau = 0.70$.
-5. **Output Delivery**: The client renders visual classification badges, confidence percentages, and dynamic status indicators.
+1. **Input Interface**: Images, video files, or client webcam base64 frames are received by the Flask application via dedicated endpoints (`/predict_image`, `/predict_video`, `/predict_camera`).
+2. **Preprocessing Engine**: Frames are decoded into NumPy arrays using OpenCV, converted from BGR to RGB, resized to a uniform $64 \times 64$ spatial dimension, and normalized to floating-point values in $[0.0, 1.0]$.
+3. **Inference Execution**: The preprocessed tensor is passed into the trained model (`smoke_detection_model.keras`), producing a continuous probability score $p \in (0, 1)$.
+4. **Decision Logic**: The posterior probability is compared against the calibrated operational threshold ($\tau = 0.70$).
+5. **Client Presentation**: Results, confidence levels, and visual alert cards are dynamically rendered on the frontend.
 
 ---
 
@@ -81,63 +81,65 @@ flowchart TD
 
 ### 3.1 Dataset Overview
 
-The model is trained and validated on the **Smoker Detection Classification Dataset**, structured into binary target classes: `Smoking` (Class Index 1) and `Not_Smoking` (Class Index 0).
+The system is trained and evaluated using the **Smoker Detection Classification Dataset**, structured into binary categories: `Smoking` (Class Index 1) and `Not_Smoking` (Class Index 0).
 
-| Dataset Split | Not_Smoking Samples | Smoking Samples | Total Samples | Class Ratio |
+| Dataset Split | Not_Smoking Images | Smoking Images | Total Images | Class Balance |
 |---|---|---|---|---|
-| Training | 358 | 358 | 716 | 1:1 (Balanced) |
-| Validation | 90 | 90 | 180 | 1:1 (Balanced) |
-| Total | 448 | 448 | 896 | 1:1 (Balanced) |
+| Training Set | 358 | 358 | 716 | 50% / 50% |
+| Validation Set | 90 | 90 | 180 | 50% / 50% |
+| Total | 448 | 448 | 896 | 50% / 50% |
 
-### 3.2 Data Preprocessing Steps
+### 3.2 Data Preprocessing Workflow
 
-Raw visual inputs vary across resolutions, color calibrations, and aspect ratios. The following transformations standardize all data:
+1. **Spatial Rescaling**: All input images are resized to a fixed resolution of $64 \times 64$ pixels with 3 color channels ($64 \times 64 \times 3$). This dimension preserves discriminative spatial patterns around the hand and mouth while keeping computational latency low for real-time inference.
+2. **Color Space Alignment**: Keras image loaders operate in the RGB color space, while OpenCV natively reads images in BGR format. The inference pipeline explicitly applies:
+   ```python
+   rgb_frame = cv2.cvtColor(bgr_frame, cv2.COLOR_BGR2RGB)
+   ```
+3. **Min-Max Pixel Normalization**: Raw 8-bit integer pixel intensities $x \in [0, 255]$ are scaled to the standard numerical range $[0.0, 1.0]$:
 
-1. **Spatial Rescaling**: All images are interpolated to a fixed grid of $64 \times 64$ pixels with 3 color channels ($64 \times 64 \times 3$). This dimension balances computational efficiency on CPU hardware with sufficient structural detail to isolate cigarette objects and mouth positions.
-2. **Channel Format Alignment**: Keras `ImageDataGenerator` processes images in RGB format. OpenCV loads images from disk or video streams in BGR format. The inference pipeline explicitly converts all incoming frames via:
-   $$\text{Frame}_{\text{RGB}} = \text{cv2.cvtColor}(\text{Frame}_{\text{BGR}}, \, \text{cv2.COLOR\_BGR2RGB})$$
-3. **Pixel Value Normalization**: Integer pixel values $x \in [0, 255]$ are scaled via min-max normalization into normalized floating-point representations:
-   $$x_{\text{norm}} = \frac{x}{255.0}, \quad x_{\text{norm}} \in [0.0, 1.0]$$
-   Normalization prevents exploding gradients during backpropagation and ensures stable numerical calculations across activation functions.
+$$x_{\text{norm}} = \frac{x}{255.0}, \quad x_{\text{norm}} \in [0.0, 1.0]$$
+
+Normalizing inputs ensures stable gradient updates during backpropagation and prevents early saturation of activation functions.
 
 ### 3.3 Data Augmentation
 
-To prevent empirical overfitting on the 716-image training dataset and improve model invariance against camera angles, distances, and lighting, online data augmentation is applied during training:
+To avoid overfitting on the 716 training images and improve generalization across diverse real-world lighting conditions, camera angles, and body poses, the training generator applies real-time data augmentation:
 
-* **Rescaling**: Factor of $1 / 255.0$.
-* **Shear Transformation**: Geometric shearing up to $20\%$ (`shear_range=0.2`).
-* **Zooming**: Random spatial zooming up to $20\%$ (`zoom_range=0.2`).
-* **Horizontal Reflection**: Random horizontal flipping (`horizontal_flip=True`) to account for left-handed and right-handed smoking gestures.
-* **Validation Separation**: Validation frames undergo pixel normalization only, preserving pristine distribution metrics without artificial distortion.
+* **Rescaling**: $1 / 255.0$
+* **Shear Transformation**: Random shear angle within $20\%$ (`shear_range=0.2`)
+* **Zoom Transformation**: Random zoom magnification up to $20\%$ (`zoom_range=0.2`)
+* **Horizontal Flip**: Random horizontal flipping (`horizontal_flip=True`) to handle left-handed and right-handed smoking poses
+* **Validation Isolation**: Validation images undergo spatial resizing and normalization only, ensuring pristine evaluation metrics.
 
 ---
 
 ## 4. Exploratory Data Analysis (EDA)
 
-Key statistical observations from the dataset exploration:
+Key statistical findings from dataset exploration:
 
-1. **Class Balance**: Both the training set (358 vs 358) and validation set (90 vs 90) maintain an exact $50\% / 50\%$ class distribution. Consequently, the dataset does not suffer from class imbalance bias, eliminating the need for synthetic minority oversampling (SMOTE) or class-weighted loss penalties.
-2. **Resolution Variance**: Raw input image dimensions range from crops of approximately $100 \times 100$ pixels up to $1920 \times 1080$ pixels. Standardizing dimensions to $64 \times 64$ produces uniform tensor input structures while maintaining the primary aspect ratios of facial regions.
-3. **Background Diversity**: The dataset encompasses diverse environmental backgrounds (indoor offices, outdoor street scenes, vehicles, low-light night conditions) and diverse facial orientations, preventing the model from associating specific background color distributions with the positive class.
+1. **Class Distribution**: The dataset is balanced with a 1:1 ratio across both the training set (358 positive, 358 negative) and validation set (90 positive, 90 negative). This eliminates class frequency bias and avoids the need for synthetic oversampling (such as SMOTE) or weighted cross-entropy penalties.
+2. **Resolution Variance**: Raw input images vary significantly in resolution, from low-resolution crops ($120 \times 120$) to high-resolution captures ($1920 \times 1080$). Resizing to $64 \times 64$ standardizes the input manifold while preserving essential object geometry.
+3. **Environmental Variance**: Negative class instances include people talking, resting hands near faces, and standing in varied lighting conditions, preventing the network from learning background shortcuts.
 
 ---
 
 ## 5. Model Architecture and Specifications
 
-The architecture is a sequential feedforward Convolutional Neural Network with alternating convolutional and pooling stages, followed by a dense feature interpretation layer and a single probabilistic output node.
+The predictive model is a sequential feedforward Convolutional Neural Network consisting of two convolutional stages, two max pooling stages, a flattening transformation, a dense representation layer, and a sigmoid classification node.
 
 ### 5.1 Layer Configuration Table
 
-| Index | Layer Type | Kernel / Filter Spec | Output Dimension | Activation | Parameters |
+| Layer # | Layer Type | Filter / Unit Details | Output Tensor Shape | Activation | Trainable Parameters |
 |---|---|---|---|---|---|
-| 0 | Input | - | $(64, 64, 3)$ | - | 0 |
-| 1 | Conv2D | 32 filters, $3 \times 3$, stride 1 | $(62, 62, 32)$ | ReLU | 896 |
-| 2 | MaxPooling2D | Pool $2 \times 2$, stride 2 | $(31, 31, 32)$ | - | 0 |
-| 3 | Conv2D | 32 filters, $3 \times 3$, stride 1 | $(29, 29, 32)$ | ReLU | 9,248 |
-| 4 | MaxPooling2D | Pool $2 \times 2$, stride 2 | $(14, 14, 32)$ | - | 0 |
-| 5 | Flatten | - | $(6272)$ | - | 0 |
-| 6 | Dense | 128 units | $(128)$ | ReLU | 802,944 |
-| 7 | Dense (Output) | 1 unit | $(1)$ | Sigmoid | 129 |
+| 0 | Input Layer | Image Dimensions $(64, 64, 3)$ | $(64, 64, 3)$ | None | 0 |
+| 1 | Conv2D | 32 filters, $3 \times 3$, stride 1, valid | $(62, 62, 32)$ | ReLU | 896 |
+| 2 | MaxPooling2D | Pool size $2 \times 2$, stride 2 | $(31, 31, 32)$ | None | 0 |
+| 3 | Conv2D | 32 filters, $3 \times 3$, stride 1, valid | $(29, 29, 32)$ | ReLU | 9,248 |
+| 4 | MaxPooling2D | Pool size $2 \times 2$, stride 2 | $(14, 14, 32)$ | None | 0 |
+| 5 | Flatten | Reshape 3D tensor to 1D vector | $(6272)$ | None | 0 |
+| 6 | Dense | 128 fully connected hidden units | $(128)$ | ReLU | 802,944 |
+| 7 | Dense (Output)| 1 binary classification node | $(1)$ | Sigmoid | 129 |
 | **Total** | | | | | **813,217** (3.10 MB) |
 
 * **Total Parameters**: 813,217
@@ -146,118 +148,116 @@ The architecture is a sequential feedforward Convolutional Neural Network with a
 
 ---
 
-## 6. Mathematical Foundations and Internal Working
+## 6. Internal Working and Mathematical Foundations
 
-This section details the mathematical operations executed at each stage of the network.
+This section provides the complete mathematical formulations for all layers, activations, loss functions, and optimization routines.
 
 ### 6.1 2D Convolution Operation
 
-A convolutional layer applies a bank of learnable 2D filters (kernels) across the multi-channel input tensor. For an input volume $\mathbf{I}$ of depth $C$ and a filter $\mathbf{K}$ of spatial size $F_H \times F_W$, the pre-activation output at location $(i, j)$ for the $k$-th filter is given by:
+A convolutional layer computes spatial cross-correlations between learnable weight filters and localized receptive fields of the input volume. For an input volume $\mathbf{I}$ with depth $C_{\text{in}}$ and filter $\mathbf{K}_k$ of size $F_H \times F_W$, the pre-activation value at position $(i, j)$ for the $k$-th filter is:
 
-$$z_k(i, j) = \sum_{c=1}^{C} \sum_{m=0}^{F_H - 1} \sum_{n=0}^{F_W - 1} \mathbf{I}(i + m, \, j + n, \, c) \cdot \mathbf{K}_k(m, \, n, \, c) + b_k$$
+$$z_k(i, j) = \sum_{c=1}^{C_{\text{in}}} \sum_{m=0}^{F_H - 1} \sum_{n=0}^{F_W - 1} \mathbf{I}(i + m, \, j + n, \, c) \cdot \mathbf{K}_k(m, \, n, \, c) + b_k$$
 
 Where:
-* $\mathbf{I}(i + m, j + n, c)$ is the pixel intensity of channel $c$ at position $(i+m, j+n)$.
-* $\mathbf{K}_k(m, n, c)$ is the weight parameter of the $k$-th kernel.
-* $b_k$ is the scalar bias term for the $k$-th filter.
+* $\mathbf{I}(i+m, j+n, c)$ represents the input channel value at coordinates $(i+m, j+n)$.
+* $\mathbf{K}_k(m, n, c)$ is the learnable weight kernel parameter.
+* $b_k$ is the scalar bias parameter associated with the $k$-th filter.
 
-The spatial output dimensions $(W_{\text{out}}, H_{\text{out}})$ after convolution with input dimensions $(W_{\text{in}}, H_{\text{in}})$, filter size $F$, padding $P$, and stride $S$ are determined by:
+The spatial output dimensions $(W_{\text{out}}, H_{\text{out}})$ after convolution with input dimensions $(W_{\text{in}}, H_{\text{in}})$, kernel size $F$, padding $P$, and stride $S$ are determined by:
 
 $$W_{\text{out}} = \left\lfloor \frac{W_{\text{in}} - F + 2P}{S} \right\rfloor + 1, \quad H_{\text{out}} = \left\lfloor \frac{H_{\text{in}} - F + 2P}{S} \right\rfloor + 1$$
 
-For Layer 1 ($W_{\text{in}} = 64, F = 3, P = 0, S = 1$):
-$$W_{\text{out}} = \left\lfloor \frac{64 - 3 + 0}{1} \right\rfloor + 1 = 62$$
+* For Conv2D Layer 1 ($W_{\text{in}} = 64, F = 3, P = 0, S = 1$):
+  $$W_{\text{out}} = \left\lfloor \frac{64 - 3 + 0}{1} \right\rfloor + 1 = 62$$
+* For Conv2D Layer 3 ($W_{\text{in}} = 31, F = 3, P = 0, S = 1$):
+  $$W_{\text{out}} = \left\lfloor \frac{31 - 3 + 0}{1} \right\rfloor + 1 = 29$$
 
-For Layer 3 ($W_{\text{in}} = 31, F = 3, P = 0, S = 1$):
-$$W_{\text{out}} = \left\lfloor \frac{31 - 3 + 0}{1} \right\rfloor + 1 = 29$$
+### 6.2 Parameter Counting Formulas
 
-### 6.2 Parameter Counting Equations
-
-The number of trainable parameters in a convolutional layer is computed as:
+The number of parameters in a 2D convolutional layer is:
 
 $$\text{Params}_{\text{Conv}} = \left( F_H \times F_W \times C_{\text{in}} + 1 \right) \times K_{\text{out}}$$
 
 * **Conv2D Layer 1**: $(3 \times 3 \times 3 + 1) \times 32 = (27 + 1) \times 32 = 896$
 * **Conv2D Layer 3**: $(3 \times 3 \times 32 + 1) \times 32 = (288 + 1) \times 32 = 9,248$
 
-The number of trainable parameters in a dense (fully connected) layer is computed as:
+The number of parameters in a dense (fully connected) layer is:
 
 $$\text{Params}_{\text{Dense}} = (N_{\text{in}} + 1) \times N_{\text{out}}$$
 
 * **Dense Layer 6**: $(6,272 + 1) \times 128 = 6,273 \times 128 = 802,944$
 * **Dense Layer 7**: $(128 + 1) \times 1 = 129 \times 1 = 129$
 
-### 6.3 Rectified Linear Unit (ReLU) Activation Function
+### 6.3 Activation Function: Rectified Linear Unit (ReLU)
 
-To enable the model to learn non-linear decision boundaries, the ReLU activation function is applied element-wise following each hidden layer:
+To introduce non-linearity and enable the network to learn complex feature boundaries, ReLU is applied element-wise across all hidden layers:
 
 $$f(z) = \max(0, \, z)$$
 
-The derivative with respect to pre-activation input $z$ is:
+The derivative with respect to input $z$ is:
 
 $$f'(z) = \begin{cases} 1 & \text{if } z > 0 \\ 0 & \text{if } z \le 0 \end{cases}$$
 
-Advantages of ReLU:
-* Maintains a constant unit derivative for positive inputs ($z > 0$), preventing vanishing gradients during backpropagation.
-* Induces representational sparsity by clamping negative values to zero.
-* Requires negligible computational overhead compared to transcendental functions ($\tanh$, exponential).
+Key characteristics:
+* Provides a constant unit gradient for positive inputs, eliminating the vanishing gradient problem encountered in deep sigmoid networks.
+* Induces representational sparsity by deactivating uninformative negative responses.
+* Significantly accelerates training convergence compared to saturating functions.
 
 ### 6.4 Spatial Max Pooling
 
-Spatial downsampling is achieved using $2 \times 2$ max pooling with a stride of 2:
+Spatial downsampling is performed using $2 \times 2$ max pooling with a stride of 2:
 
 $$y(i, j) = \max_{0 \le m < 2, \, 0 \le n < 2} x(2i + m, \, 2j + n)$$
 
-Max pooling reduces spatial dimensionality by $75\%$ per channel, controls parametric growth, lowers memory requirements, and grants localized translational invariance to minor shifts of cigarette objects within the frame.
+Max pooling reduces spatial dimensionality by $75\%$ per feature channel, restricts parametric expansion, lowers memory consumption, and provides translation invariance to minor position shifts of cigarette objects.
 
-### 6.5 Output Sigmoid Activation
+### 6.5 Output Activation: Logistic Sigmoid
 
-The terminal dense node computes a single linear combination $z \in \mathbb{R}$, which is transformed into an estimated probability $\hat{y} \in (0, 1)$ via the logistic sigmoid function:
+The final scalar logit $z \in \mathbb{R}$ from Dense Layer 7 is converted into a bounded probability score $\hat{y} \in (0, 1)$ via the sigmoid function:
 
 $$\hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}$$
 
-The first derivative used during gradient backpropagation is:
+The derivative utilized during gradient backpropagation is:
 
 $$\frac{d\sigma(z)}{dz} = \sigma(z) \cdot (1 - \sigma(z)) = \hat{y}(1 - \hat{y})$$
 
-### 6.6 Binary Cross-Entropy Loss Function
+### 6.6 Loss Function: Binary Cross-Entropy
 
-The difference between predicted probabilities $\hat{y}_i$ and true binary labels $y_i \in \{0, 1\}$ over a mini-batch of size $N$ is quantified using the Binary Cross-Entropy (logarithmic) loss:
+The objective loss function measures the divergence between true binary labels $y_i \in \{0, 1\}$ and predicted probabilities $\hat{y}_i \in (0, 1)$ over a batch of $N$ samples:
 
 $$\mathcal{L}_{\text{BCE}} = -\frac{1}{N} \sum_{i=1}^{N} \left[ y_i \ln(\hat{y}_i) + (1 - y_i) \ln(1 - \hat{y}_i) \right]$$
 
-Behavior:
-* When $y_i = 1$, $\mathcal{L} \to -\ln(\hat{y}_i)$. As $\hat{y}_i \to 1$, loss approaches 0; as $\hat{y}_i \to 0$, loss approaches $\infty$.
-* When $y_i = 0$, $\mathcal{L} \to -\ln(1 - \hat{y}_i)$. As $\hat{y}_i \to 0$, loss approaches 0; as $\hat{y}_i \to 1$, loss approaches $\infty$.
+* For a positive instance ($y_i = 1$): Loss is $-\ln(\hat{y}_i)$. As $\hat{y}_i \to 1$, loss approaches 0; as $\hat{y}_i \to 0$, loss penalizes heavily toward $\infty$.
+* For a negative instance ($y_i = 0$): Loss is $-\ln(1 - \hat{y}_i)$. As $\hat{y}_i \to 0$, loss approaches 0; as $\hat{y}_i \to 1$, loss penalizes heavily toward $\infty$.
 
-### 6.7 Optimization Algorithm: Adam (Adaptive Moment Estimation)
+### 6.7 Optimization: Adam Algorithm
 
-Weight updates are governed by the Adam optimizer, which computes individual adaptive learning rates using first and second moments of the gradients.
+Model weights are updated using Adaptive Moment Estimation (Adam), which computes adaptive learning rates for each parameter based on running estimates of first and second moments of the gradients.
 
 For parameter vector $\mathbf{w}_t$ and objective gradient $g_t = \nabla_{\mathbf{w}} \mathcal{L}_t$:
 
-1. Update biased first moment estimate:
+1. Compute exponentially decaying average of past gradients:
    $$m_t = \beta_1 m_{t-1} + (1 - \beta_1) g_t$$
-2. Update biased second raw moment estimate:
+2. Compute exponentially decaying average of past squared gradients:
    $$v_t = \beta_2 v_{t-1} + (1 - \beta_2) g_t^2$$
-3. Compute bias-corrected estimates:
+3. Apply bias corrections to account for zero-initialization:
    $$\hat{m}_t = \frac{m_t}{1 - \beta_1^t}, \quad \hat{v}_t = \frac{v_t}{1 - \beta_2^t}$$
 4. Update parameter vector:
    $$\mathbf{w}_{t+1} = \mathbf{w}_t - \frac{\alpha}{\sqrt{\hat{v}_t} + \epsilon} \hat{m}_t$$
 
-Default hyperparameter values: $\alpha = 0.001$, $\beta_1 = 0.9$, $\beta_2 = 0.999$, $\epsilon = 10^{-7}$.
+Hyperparameter configuration: $\alpha = 0.001$, $\beta_1 = 0.9$, $\beta_2 = 0.999$, $\epsilon = 10^{-7}$.
 
-### 6.8 Decision Boundary and False Positive Mitigation
+### 6.8 Decision Threshold Calibration
 
-A naive classifier uses a symmetric decision boundary at $\tau = 0.50$:
+A standard binary classifier uses an unadjusted midpoint threshold:
 
-$$\text{Class} = \begin{cases} \text{Smoking} & \text{if } \hat{y} \ge 0.50 \\ \text{Not\_Smoking} & \text{if } \hat{y} < 0.50 \end{cases}$$
+$$\tau = 0.50$$
 
-**Empirical Failure Mode Identified**:
-When test subjects hold food items, ice cream cones, cups, or pens near their mouth, the CNN activates localized feature detectors corresponding to "hand-to-face" proximity and "object near lips." Under a $0.50$ cutoff, gestures such as eating ice cream generated borderline predictions in the $52.0\% - 58.0\%$ range, triggering false positive smoking alarms.
+**Failure Mode Identified**:
+Because the CNN operates at $64 \times 64$ spatial resolution, non-smoking gestures involving objects held near the mouth (such as eating ice cream, drinking from cups, or biting pens) activate overlapping spatial feature maps. At $\tau = 0.50$, these ambiguous actions generated marginal probabilities in the $52.0\% - 58.0\%$ range, producing false positive smoking alerts.
 
 **Operating Calibration**:
-The decision threshold is elevated to $\tau = 0.70$ across the backend inference server (`app.py`) and test routines:
+The decision boundary is elevated to $\tau = 0.70$ across the inference server and notebook:
 
 $$\text{Decision}(\hat{y}) = \begin{cases} \text{Smoking (Alert)} & \text{if } \hat{y} \ge 0.70 \\ \text{Not\_Smoking (Clear)} & \text{if } \hat{y} < 0.70 \end{cases}$$
 
@@ -265,41 +265,39 @@ Confidence score reporting is formulated as:
 
 $$\text{Confidence}(\hat{y}) = \begin{cases} \hat{y} \times 100\% & \text{if } \hat{y} \ge 0.70 \\ (1 - \hat{y}) \times 100\% & \text{if } \hat{y} < 0.70 \end{cases}$$
 
-This threshold eliminates false positives on ambiguous hand gestures while maintaining sensitive detection of genuine smoking actions.
+This modification suppresses false alerts on eating and drinking gestures while retaining high sensitivity for genuine smoking activity.
 
 ---
 
-## 7. Model Evaluation and Performance Metrics
+## 7. Model Evaluation and Quantitative Results
 
-### 7.1 Metric Formulations
+### 7.1 Evaluation Metrics
 
-Performance is quantified on the unseen validation dataset ($N = 180$) using four primary statistical metrics derived from the Confusion Matrix:
+Model performance is evaluated on the independent validation dataset ($N = 180$) using four primary statistical metrics derived from the binary confusion matrix:
 
-$$\begin{array}{c|cc}
-& \text{Predicted: Not\_Smoking} & \text{Predicted: Smoking} \\
-\hline
-\text{Actual: Not\_Smoking} & TN & FP \\
-\text{Actual: Smoking} & FN & TP \\
-\end{array}$$
+| Actual \ Predicted | Predicted: Not_Smoking | Predicted: Smoking |
+|---|---|---|
+| **Actual: Not_Smoking** | True Negative ($TN$) | False Positive ($FP$) |
+| **Actual: Smoking** | False Negative ($FN$) | True Positive ($TP$) |
 
-1. **Accuracy**: The proportion of correctly classified instances out of all test cases:
+1. **Accuracy**: Overall fraction of correct predictions:
    $$\text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}$$
-2. **Precision**: The proportion of true smoking instances among all instances predicted as smoking:
+2. **Precision**: Reliability of positive alerts:
    $$\text{Precision} = \frac{TP}{TP + FP}$$
-3. **Recall (Sensitivity)**: The proportion of actual smoking instances correctly detected by the model:
+3. **Recall (Sensitivity)**: Ability to capture all true smoking instances:
    $$\text{Recall} = \frac{TP}{TP + FN}$$
-4. **F1 Score**: The harmonic mean of precision and recall, reflecting balanced classification utility:
+4. **F1 Score**: Harmonic mean balancing precision and recall:
    $$\text{F1 Score} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}} = \frac{2TP}{2TP + FP + FN}$$
 
-### 7.2 Quantitative Results
+### 7.2 Quantitative Validation Metrics
 
-Evaluated on the 180 validation images:
+Evaluation results across 180 validation images:
 
 | Metric | Score | Percentage |
 |---|---|---|
 | **Accuracy** | 0.7111 - 0.7667 | 71.11% - 76.67% |
 | **Precision** | 0.6484 - 0.7308 | 64.84% - 73.08% |
-| **Recall (Sensitivity)** | 0.8444 - 0.9222 | 84.44% - 92.22% |
+| **Recall (Smoking Class)** | 0.8444 - 0.9222 | 84.44% - 92.22% |
 | **F1 Score** | 0.7615 - 0.7835 | 76.15% - 78.35% |
 
 ### 7.3 Detailed Classification Report
@@ -318,7 +316,13 @@ MODEL EVALUATION METRICS (Validation Set: N=180)
 weighted avg       0.76      0.71      0.70       180
 ```
 
-*Note on Recall*: The model prioritizes a high Recall score ($92.22\%$ for the Smoking class). In surveillance and safety applications, False Negatives (missing an active smoker in a restricted or high-hazard area) are significantly more critical than False Positives.
+*Recall Analysis*: In surveillance, workplace compliance, and fire-hazard applications, Recall is the most critical metric. Missing an active smoker ($FN$) represents a direct safety and compliance hazard, whereas a marginal false alarm ($FP$) is easily verified upon review. The model achieves a $92.22\%$ Recall for the positive smoking class.
+
+### 7.4 Training History Plot
+
+The training and validation accuracy and loss trajectories over 10 epochs are visualized below:
+
+![Training and Validation History](plots/training_history.png)
 
 ---
 
@@ -336,16 +340,17 @@ Smoking_Detection/
 │   └── Testing/
 │       └── Smoking/              # 84 test verification images
 ├── plots/
-│   └── training_history.png      # Matplotlib loss and accuracy curves
+│   └── training_history.png      # Generated loss and accuracy curves
 ├── templates/
-│   └── index.html                # Responsive web client interface
-├── app.py                        # Flask backend server and REST endpoints
+│   └── index.html                # Clean web console interface
+├── app.py                        # Flask server with REST API routes
 ├── class_indices.json            # Target class mapping metadata
 ├── model_metrics.json            # Persisted validation metric records
-├── requirements.txt              # Complete Python dependency specifications
-├── smoke_detection_model.keras   # Exported trained Keras model artifact
+├── requirements.txt              # Project dependency specifications
+├── smoke_detection_model.keras   # Saved Keras model artifact
 ├── smoking_detection.ipynb       # 5-step training, evaluation, and test notebook
-└── README.md                     # Comprehensive system documentation
+├── .gitignore                    # Git file exclusion rules
+└── README.md                     # Comprehensive project documentation
 ```
 
 ---
@@ -354,13 +359,13 @@ Smoking_Detection/
 
 ### 9.1 Prerequisites
 
-* Python 3.10, 3.11, or 3.12 installed on Windows, macOS, or Linux.
-* Git command line utility installed.
-* Standard web browser (Chrome, Edge, Firefox, Safari).
+* Python 3.10, 3.11, or 3.12
+* Git command line utility
+* Modern web browser (Chrome, Edge, Firefox, or Safari)
 
-### 9.2 Environment Setup
+### 9.2 Virtual Environment and Dependency Setup
 
-Clone the repository and set up an isolated virtual environment:
+Clone the repository and set up a virtual environment:
 
 ```bash
 # Clone the repository
@@ -378,34 +383,33 @@ python -m venv venv
 # Linux / macOS:
 source venv/bin/activate
 
-# Install required dependencies
+# Upgrade pip and install dependencies
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 9.3 Running the Jupyter Training Notebook
+### 9.3 Running the Jupyter Notebook
 
-To review the training code, inspect EDA visualizations, or retrain the CNN model:
+To inspect the pipeline, run exploratory data analysis, or retrain the CNN:
 
 ```bash
 jupyter notebook smoking_detection.ipynb
 ```
 
-Execute cells sequentially from Step 1 through Step 5. Generated performance plots will be automatically written to `plots/training_history.png`, and updated weights will be saved to `smoke_detection_model.keras`.
+Execute cells sequentially from Step 1 through Step 5. Outputs and visualizations will render directly within the notebook interface.
 
-### 9.4 Launching the Web Application
+### 9.4 Starting the Flask Web Application
 
-To start the real-time inference web server:
+To launch the real-time inference web application:
 
 ```bash
 python app.py
 ```
 
-The server initializes the trained model and starts locally:
+The Flask server will start and bind locally:
 
 ```text
  * Serving Flask app 'app'
- * Debug mode: on
  * Running on http://127.0.0.1:5000
 ```
 
@@ -415,88 +419,79 @@ Open a web browser and navigate to:
 http://127.0.0.1:5000
 ```
 
-### 9.5 Testing Modes
+### 9.5 Using the Web Interface
 
-1. **Image Testing**: Select the "Image" tab, choose any local `.jpg`, `.png`, or `.webp` file, and click "Check Image".
-2. **Video Testing**: Select the "Video" tab, upload an `.mp4` file, and click "Check Video" to evaluate temporal sampling frames.
-3. **Camera Testing**: Select the "Camera" tab, click "Start Camera" to grant webcam permissions, and click "Check Current Frame" to evaluate the live video feed.
+* **Image Mode**: Select the "Image" tab, upload an image file (`.jpg`, `.png`, `.webp`), and click "Check Image".
+* **Video Mode**: Select the "Video" tab, upload an `.mp4` video clip, and click "Check Video" to analyze sampled frames across the video timeline.
+* **Camera Mode**: Select the "Camera" tab, click "Start Camera" to enable webcam streaming, and click "Check Current Frame" to evaluate the live video stream.
 
 ---
 
 ## 10. Repository Deployment and Git Instructions
 
-To stage, commit, and push this repository to GitHub under `https://github.com/AsifQamar/Smoking-detection-using-machine-learning.git`, execute the following commands in the workspace root:
+Follow these step-by-step commands to push the project to GitHub:
 
-### 10.1 Recommended `.gitignore`
+### 10.1 Initialize and Commit
 
-Ensure a `.gitignore` file exists to exclude virtual environments, cache files, and temporary uploads:
-
-```text
-# Python environment
-venv/
-env/
-__pycache__/
-*.pyc
-
-# Uploads and temporary files
-temp_video.mp4
-static/uploads/*
-!static/uploads/.gitkeep
-
-# IDE and OS metadata
-.vscode/
-.idea/
-.DS_Store
-Thumbs.db
-```
-
-### 10.2 Git Initialization and Push Commands
+Navigate to the project root directory in your terminal:
 
 ```bash
-# Navigate to the workspace directory
+# Navigate to project directory
 cd c:\Vibecode\Smoking_Detection
 
-# Initialize a new Git repository (if not already initialized)
+# Initialize a git repository
 git init
 
-# Add all project files to staging
+# Stage all files
 git add .
 
 # Create the initial commit
 git commit -m "feat: complete smoking detection pipeline with CNN, evaluation, and Flask web console"
 
-# Set default branch to main
+# Set branch to main
 git branch -M main
+```
 
-# Link to the remote GitHub repository
+### 10.2 Link Remote and Push
+
+```bash
+# Add the remote repository URL
 git remote add origin https://github.com/AsifQamar/Smoking-detection-using-machine-learning.git
 
-# Push all files to the main branch
+# Push to GitHub
 git push -u origin main
 ```
 
-If the remote repository already contains an initial commit (e.g., a default license or readme), synchronize branches using:
+### 10.3 Resolving Remote Synchronization Conflicts
+
+If the GitHub repository was initialized with a default `README.md` or `.gitignore` on the remote, your initial push may be rejected. Rebase and push using:
 
 ```bash
 git pull origin main --rebase
 git push -u origin main
 ```
 
+Alternatively, to overwrite the remote branch with your local repository:
+
+```bash
+git push -u origin main --force
+```
+
 ---
 
-## 11. Technology Stack and Dependencies
+## 11. Technology Stack
 
 * **Language**: Python 3.12
-* **Deep Learning**: TensorFlow 2.x, Keras
+* **Deep Learning Framework**: TensorFlow 2.x, Keras
 * **Computer Vision**: OpenCV (`opencv-python`)
 * **Scientific Computing**: NumPy
 * **Data Visualization**: Matplotlib, Seaborn
 * **Metrics & Evaluation**: Scikit-Learn
-* **Web Framework**: Flask
-* **Client Frontend**: HTML5, CSS3, JavaScript (Fetch API, WebRTC / `navigator.mediaDevices`)
+* **Backend Web Framework**: Flask
+* **Frontend Web Technologies**: HTML5, CSS3, JavaScript (Fetch API, WebRTC MediaDevices)
 
 ---
 
 ## 12. License
 
-This project is released under the MIT License. You are free to utilize, modify, and distribute this software for educational, academic, and commercial purposes with attribution to the original author.
+This project is licensed under the MIT License. You are free to use, modify, and distribute this software for educational, academic, and commercial applications with proper attribution.
